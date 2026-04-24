@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurante Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a96e;
+      --gold-light: #e8d5b0;
+      --dark: #1a1714;
+      --dark-mid: #2c2825;
+      --cream: #faf7f2;
+      --cream-mid: #f0ebe2;
+      --text: #2c2825;
+      --text-muted: #7a6f63;
+      --radius: 6px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      color: var(--text);
+      background: var(--cream);
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5vw;
+      height: 64px;
+      background: rgba(26,23,20,0.92);
+      backdrop-filter: blur(8px);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--gold-light);
+      letter-spacing: 1px;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: rgba(255,255,255,0.8);
+      transition: all 0.3s;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 5vw;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=85') center/cover no-repeat;
+      transform: scale(1.05);
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(20,16,12,0.55) 0%, rgba(20,16,12,0.4) 60%, rgba(20,16,12,0.7) 100%);
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-tag {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(42px, 8vw, 80px);
+      font-weight: 500;
+      color: #fff;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .hero-sub {
+      font-size: clamp(14px, 2vw, 17px);
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 36px;
+      font-weight: 300;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: #fff;
+      padding: 13px 32px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .btn-gold:hover { background: #b8935a; }
+    .btn-ghost {
+      background: transparent;
+      color: #fff;
+      padding: 13px 32px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.5);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 400;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+    .hero-scroll {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.5));
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+    /* SECCIONES */
+    section { padding: 80px 5vw; }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 500;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .section-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 32px;
+    }
+
+    /* SOBRE NOSOTROS */
+    #nosotros { background: var(--cream); }
+    .nosotros-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .nosotros-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: var(--radius);
+    }
+    .nosotros-text {
+      font-size: 16px;
+      line-height: 1.85;
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+
+    /* CARTA */
+    #carta { background: var(--dark); }
+    #carta .section-title { color: #fff; }
+    .carta-intro {
+      font-size: 15px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 40px;
+      max-width: 520px;
+      line-height: 1.7;
+    }
+    .carta-fotos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .carta-foto-slot {
+      aspect-ratio: 3/4;
+      background: var(--dark-mid);
+      border-radius: var(--radius);
+      border: 1px dashed rgba(201,169,110,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: rgba(201,169,110,0.5);
+      overflow: hidden;
+    }
+    .carta-foto-slot svg { width: 32px; height: 32px; opacity: 0.4; }
+    .carta-foto-slot span { font-size: 12px; opacity: 0.6; letter-spacing: 1px; }
+    .carta-nota {
+      margin-top: 24px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 1px;
+    }
+
+    /* GALERÍA */
+    #galeria { background: var(--cream-mid); }
+    .galeria-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .galeria-grid img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: var(--radius);
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .galeria-grid img:hover { transform: scale(1.02); }
+    .galeria-grid img:first-child {
+      grid-column: span 2;
+      aspect-ratio: 16/9;
+    }
+
+    /* CÓMO LLEGAR */
+    #llegar { background: var(--cream); }
+    .llegar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 60px;
+      align-items: start;
+    }
+    .llegar-info { display: flex; flex-direction: column; gap: 20px; }
+    .info-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .info-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--cream-mid);
+      border: 1px solid var(--gold-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 15px;
+    }
+    .info-text { display: flex; flex-direction: column; gap: 3px; }
+    .info-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 500;
+    }
+    .info-value {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .info-value a { color: var(--text-muted); text-decoration: none; }
+    .mapa-slot {
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: var(--cream-mid);
+      border-radius: var(--radius);
+      border: 1px solid var(--gold-light);
+      overflow: hidden;
+    }
+    .mapa-slot iframe { width: 100%; height: 100%; border: none; display: block; }
+    .mapa-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--dark);
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 32px 5vw;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    .footer-nombre {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      color: var(--gold-light);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 0 4vw; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 64px; left: 0; right: 0;
+        background: rgba(26,23,20,0.97);
+        padding: 8px 0;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .nav-links a { display: block; padding: 14px 5vw; font-size: 13px; }
+      .nav-toggle { display: flex; }
+      section { padding: 60px 4vw; }
+      .nosotros-grid { grid-template-columns: 1fr; gap: 28px; }
+      .nosotros-img { aspect-ratio: 16/9; }
+      .carta-fotos-grid { grid-template-columns: 1fr 1fr; }
+      .galeria-grid { grid-template-columns: 1fr 1fr; }
+      .galeria-grid img:first-child { grid-column: span 2; aspect-ratio: 16/9; }
+      .llegar-inner { grid-template-columns: 1fr; gap: 32px; }
+      .mapa-slot { aspect-ratio: 4/3; }
+    }
+
+    @media (max-width: 480px) {
+      .carta-fotos-grid { grid-template-columns: 1fr; }
+      .hero-btns { flex-direction: column; align-items: center; }
+      .btn-gold, .btn-ghost { width: 100%; max-width: 260px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="nav-logo">Restaurante Demo</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#carta">Carta</a></li>
+      <li><a href="#galeria">Galería</a></li>
+      <li><a href="#llegar">Cómo llegar</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="hero" id="inicio">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-content">
+      <div class="hero-tag">Bienvenido a</div>
+      <h1>Restaurante<br>Demo</h1>
+      <p class="hero-sub">Cocina tradicional con alma mediterránea</p>
+      <div class="hero-btns">
+        <a href="#carta" class="btn-gold">Ver carta</a>
+        <a href="#llegar" class="btn-ghost">Reservar</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+
+  <section id="nosotros">
+    <div class="nosotros-grid">
+      <img class="nosotros-img" src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80" alt="Interior del restaurante" />
+      <div>
+        <div class="section-label">Nuestra historia</div>
+        <div class="section-divider"></div>
+        <p class="nosotros-text">Llevamos más de 20 años ofreciendo lo mejor de la cocina mediterránea en el corazón de la ciudad. Ingredientes frescos de temporada, recetas de siempre y un ambiente acogedor para cada ocasión especial o para el día a día.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="carta">
+    <div style="max-width:1100px; margin:0 auto;">
+      <div class="section-label">Lo que ofrecemos</div>
+      <div class="section-divider"></div>
+      <p class="carta-intro">Elaborada con productos frescos de temporada.</p>
+      <div class="carta-fotos-grid">
+        <div class="carta-foto-slot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span>Foto carta — página 1</span>
+        </div>
+        <div class="carta-foto-slot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span>Foto carta — página 2</span>
+        </div>
+        <div class="carta-foto-slot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span>Foto carta — página 3</span>
+        </div>
+      </div>
+      <p class="carta-nota">* Se añadirán las fotos reales de la carta del restaurante</p>
+    </div>
+  </section>
+
+  <section id="galeria">
+    <div style="max-width:1100px; margin:0 auto;">
+      <div class="section-label">Nuestro espacio</div>
+      <div class="section-divider"></div>
+      <div class="galeria-grid">
+        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80" alt="Restaurante" />
+        <img src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=600&q=80" alt="Plato" />
+        <img src="https://images.unsplash.com/photo-1551218372-a8789b81b253?w=600&q=80" alt="Cocina" />
+        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80" alt="Plato" />
+        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80" alt="Mesa" />
+      </div>
+    </div>
+  </section>
+
+  <section id="llegar">
+    <div class="llegar-inner">
+      <div>
+        <div class="section-label">Encuéntranos</div>
+        <div class="section-divider"></div>
+        <div class="llegar-info">
+          <div class="info-item">
+            <div class="info-icon">📍</div>
+            <div class="info-text">
+              <span class="info-label">Dirección</span>
+              <span class="info-value">Calle Ejemplo 12<br>Málaga, España</span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">📞</div>
+            <div class="info-text">
+              <span class="info-label">Teléfono</span>
+              <span class="info-value"><a href="tel:+34951000000">951 000 000</a></span>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🕐</div>
+            <div class="info-text">
+              <span class="info-label">Horario</span>
+              <span class="info-value">Lun – Vie: 13:00 – 16:00 y 20:00 – 23:30<br>Sáb – Dom: 13:00 – 23:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mapa-slot">
+        <!--
+          PARA EL MAPA REAL, sustituye este bloque por:
+          <iframe src="https://www.google.com/maps/embed?pb=TU_EMBED_URL" allowfullscreen loading="lazy"></iframe>
+        -->
+        <div class="mapa-placeholder">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" stroke-width="1.2">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            <circle cx="12" cy="9" r="2.5"/>
+          </svg>
+          <span style="color:#7a6f63; font-size:13px;">Google Maps se incrustará aquí</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Restaurante Demo</p>
+  </footer>
+
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+    window.addEventListener('scroll', () => {
+      const bg = document.getElementById('heroBg');
+      if (bg) bg.style.transform = 'scale(1.05) translateY(' + (window.scrollY * 0.15) + 'px)';
+    });
+  </script>
+
+</body>
+</html>
